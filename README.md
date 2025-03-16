@@ -1,4 +1,68 @@
-# Mermaid Chart Editor - Implementation Plan
+# Mermaid Chart Editor
+
+A visual editor for creating and editing Mermaid diagrams with real-time collaboration.
+
+## Features
+
+- Visual diagram creation with drag-and-drop interface
+- Support for multiple diagram types:
+  - Flowcharts
+  - Sequence diagrams
+  - Class diagrams
+  - State diagrams
+  - Entity Relationship diagrams
+  - Gantt charts
+- Real-time collaboration
+- Version history
+- Export to Mermaid markdown, SVG, or PNG
+- Project organization and sharing
+
+## Getting Started
+
+### Prerequisites
+
+- [Bun](https://bun.sh) (for package management and development)
+- [Node.js](https://nodejs.org) 18+ (optional, Bun is recommended)
+- [Supabase](https://supabase.com) account for backend services
+
+### Setup
+
+1. Clone the repository:
+```bash
+git clone https://github.com/yourusername/mermaid-editor.git
+cd mermaid-editor
+```
+
+2. Install dependencies:
+```bash
+bun install
+```
+
+3. Set up Supabase:
+   - Create a new project at [Supabase](https://supabase.com)
+   - Copy your project URL and anon key from the project settings
+   - Copy `.env.example` to `.env` and update with your Supabase credentials:
+     ```
+     VITE_SUPABASE_URL=your-project-url
+     VITE_SUPABASE_ANON_KEY=your-anon-key
+     ```
+
+4. Start the development server:
+```bash
+bun run dev
+```
+
+### Development
+
+- `bun run dev` - Start development server
+- `bun run build` - Build for production
+- `bun run preview` - Preview production build
+- `bun test` - Run tests
+- `bun run lint` - Run linter
+
+---
+
+# Implementation Plan
 
 ## Current Foundation
 The project starts with a React Flow template that includes:
