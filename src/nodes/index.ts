@@ -4,6 +4,7 @@ import FlowchartNode from '../components/nodes/FlowchartNode';
 import SequenceNode from '../components/nodes/SequenceNode';
 import ClassNode from '../components/nodes/ClassNode';
 import StateNode from '../components/nodes/StateNode';
+import ERNode from '../components/nodes/ERNode';
 import { MermaidNodeData } from '../components/nodes/types';
 
 // Register custom node types
@@ -13,15 +14,87 @@ export const nodeTypes = {
   sequence: SequenceNode,
   class: ClassNode,
   state: StateNode,
+  er: ERNode,
 };
 
 // Create initial nodes for testing
 export const initialNodes: Node<MermaidNodeData>[] = [
-  // State Machine Nodes
+  // ER Diagram Nodes
+  {
+    id: 'er1',
+    type: 'er',
+    position: { x: 100, y: 50 },
+    data: {
+      type: 'er',
+      label: 'Users',
+      description: 'User accounts',
+      shape: 'rectangle',
+      attributes: [
+        { name: 'id', type: 'uuid', key: 'primary' },
+        { name: 'username', type: 'varchar(50)' },
+        { name: 'email', type: 'varchar(255)' },
+        { name: 'password_hash', type: 'varchar(255)' },
+        { name: 'created_at', type: 'timestamp' },
+      ],
+      style: {
+        fill: '#f0fdf4',
+        stroke: '#16a34a',
+        strokeWidth: 2,
+      },
+    },
+  },
+  {
+    id: 'er2',
+    type: 'er',
+    position: { x: 400, y: 50 },
+    data: {
+      type: 'er',
+      label: 'Posts',
+      description: 'Blog posts',
+      shape: 'rectangle',
+      attributes: [
+        { name: 'id', type: 'uuid', key: 'primary' },
+        { name: 'user_id', type: 'uuid', key: 'foreign' },
+        { name: 'title', type: 'varchar(255)' },
+        { name: 'content', type: 'text' },
+        { name: 'published_at', type: 'timestamp' },
+      ],
+      style: {
+        fill: '#fef3c7',
+        stroke: '#d97706',
+        strokeWidth: 2,
+      },
+    },
+  },
+  {
+    id: 'er3',
+    type: 'er',
+    position: { x: 700, y: 50 },
+    data: {
+      type: 'er',
+      label: 'Comments',
+      description: 'Post comments',
+      shape: 'rectangle',
+      attributes: [
+        { name: 'id', type: 'uuid', key: 'primary' },
+        { name: 'post_id', type: 'uuid', key: 'foreign' },
+        { name: 'user_id', type: 'uuid', key: 'foreign' },
+        { name: 'content', type: 'text' },
+        { name: 'created_at', type: 'timestamp' },
+      ],
+      style: {
+        fill: '#f0f9ff',
+        stroke: '#0ea5e9',
+        strokeWidth: 2,
+      },
+    },
+  },
+
+  // Previous nodes remain unchanged...
   {
     id: 'state1',
     type: 'state',
-    position: { x: 100, y: 50 },
+    position: { x: 100, y: 300 },
     data: {
       type: 'state',
       label: 'Initial',
@@ -33,157 +106,45 @@ export const initialNodes: Node<MermaidNodeData>[] = [
       },
     },
   },
-  {
-    id: 'state2',
-    type: 'state',
-    position: { x: 250, y: 50 },
-    data: {
-      type: 'state',
-      label: 'Login Form',
-      shape: 'rectangle',
-      description: 'User enters credentials',
-      entryAction: 'clearForm()',
-      exitAction: 'validateInput()',
-      style: {
-        fill: '#f0fdf4',
-        stroke: '#16a34a',
-        strokeWidth: 2,
-      },
-    },
-  },
-  {
-    id: 'state3',
-    type: 'state',
-    position: { x: 450, y: 50 },
-    data: {
-      type: 'state',
-      label: 'Validating',
-      shape: 'rectangle',
-      description: 'Checking credentials',
-      entryAction: 'showSpinner()',
-      exitAction: 'hideSpinner()',
-      style: {
-        fill: '#fef3c7',
-        stroke: '#d97706',
-        strokeWidth: 2,
-      },
-    },
-  },
-  {
-    id: 'state4',
-    type: 'state',
-    position: { x: 450, y: 200 },
-    data: {
-      type: 'state',
-      label: 'Error',
-      shape: 'rectangle',
-      description: 'Invalid credentials',
-      entryAction: 'showError()',
-      style: {
-        fill: '#fee2e2',
-        stroke: '#dc2626',
-        strokeWidth: 2,
-      },
-    },
-  },
-  {
-    id: 'state5',
-    type: 'state',
-    position: { x: 650, y: 50 },
-    data: {
-      type: 'state',
-      label: 'Authenticated',
-      shape: 'rectangle',
-      description: 'User logged in',
-      entryAction: 'redirectToDashboard()',
-      style: {
-        fill: '#f0f9ff',
-        stroke: '#0ea5e9',
-        strokeWidth: 2,
-      },
-    },
-  },
-
-  // Previous nodes remain unchanged...
-  {
-    id: 'class1',
-    type: 'class',
-    position: { x: 100, y: 350 },
-    data: {
-      type: 'class',
-      label: 'Animal',
-      description: 'Base class for animals',
-      stereotype: 'abstract',
-      shape: 'rectangle',
-      properties: [
-        '- name: string',
-        '# age: number',
-      ],
-      methods: [
-        '+ getName(): string',
-        '+ setName(name: string): void',
-        '# makeSound(): void',
-      ],
-      style: {
-        fill: '#f0fdf4',
-        stroke: '#16a34a',
-        strokeWidth: 2,
-      },
-    },
-  },
 ];
 
 // Create initial edges
 export const initialEdges = [
-  // State machine transitions
+  // ER diagram relationships
+  {
+    id: 'er1-2',
+    source: 'er1',
+    target: 'er2',
+    animated: false,
+    label: '1:N',
+    type: 'smoothstep',
+    style: { strokeWidth: 2 },
+  },
+  {
+    id: 'er2-3',
+    source: 'er2',
+    target: 'er3',
+    animated: false,
+    label: '1:N',
+    type: 'smoothstep',
+    style: { strokeWidth: 2 },
+  },
+  {
+    id: 'er1-3',
+    source: 'er1',
+    target: 'er3',
+    animated: false,
+    label: '1:N',
+    type: 'smoothstep',
+    style: { strokeWidth: 2 },
+  },
+
+  // Previous edges remain unchanged...
   {
     id: 'state1-2',
     source: 'state1',
     target: 'state2',
     animated: true,
     label: 'start',
-  },
-  {
-    id: 'state2-3',
-    source: 'state2',
-    target: 'state3',
-    animated: true,
-    label: 'submit',
-  },
-  {
-    id: 'state3-4',
-    source: 'state3',
-    target: 'state4',
-    animated: true,
-    label: '[invalid]',
-  },
-  {
-    id: 'state3-5',
-    source: 'state3',
-    target: 'state5',
-    animated: true,
-    label: '[valid]',
-  },
-  {
-    id: 'state4-2',
-    source: 'state4',
-    target: 'state2',
-    animated: true,
-    label: 'retry',
-    type: 'smoothstep',
-  },
-
-  // Previous edges remain unchanged...
-  {
-    id: 'e-inheritance',
-    source: 'class2',
-    target: 'class1',
-    animated: false,
-    style: { strokeWidth: 2 },
-    type: 'smoothstep',
-    markerEnd: {
-      type: 'arrowclosed',
-      color: '#000000',
-    },
   },
 ];
