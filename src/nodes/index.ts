@@ -2,6 +2,7 @@ import { Node } from '@xyflow/react';
 import MermaidNode from '../components/nodes/MermaidNode';
 import FlowchartNode from '../components/nodes/FlowchartNode';
 import SequenceNode from '../components/nodes/SequenceNode';
+import ClassNode from '../components/nodes/ClassNode';
 import { MermaidNodeData } from '../components/nodes/types';
 
 // Register custom node types
@@ -9,15 +10,89 @@ export const nodeTypes = {
   mermaid: MermaidNode,
   flowchart: FlowchartNode,
   sequence: SequenceNode,
+  class: ClassNode,
 };
 
 // Create initial nodes for testing
 export const initialNodes: Node<MermaidNodeData>[] = [
-  // Sequence Diagram Nodes
+  // Class Diagram Nodes
+  {
+    id: 'class1',
+    type: 'class',
+    position: { x: 100, y: 50 },
+    data: {
+      type: 'class',
+      label: 'Animal',
+      description: 'Base class for animals',
+      stereotype: 'abstract',
+      shape: 'rectangle',
+      properties: [
+        '- name: string',
+        '# age: number',
+      ],
+      methods: [
+        '+ getName(): string',
+        '+ setName(name: string): void',
+        '# makeSound(): void',
+      ],
+      style: {
+        fill: '#f0fdf4',
+        stroke: '#16a34a',
+        strokeWidth: 2,
+      },
+    },
+  },
+  {
+    id: 'class2',
+    type: 'class',
+    position: { x: 50, y: 250 },
+    data: {
+      type: 'class',
+      label: 'Dog',
+      shape: 'rectangle',
+      properties: [
+        '- breed: string',
+      ],
+      methods: [
+        '+ getBreed(): string',
+        '# makeSound(): void',
+      ],
+      style: {
+        fill: '#fef3c7',
+        stroke: '#d97706',
+        strokeWidth: 2,
+      },
+    },
+  },
+  {
+    id: 'class3',
+    type: 'class',
+    position: { x: 300, y: 250 },
+    data: {
+      type: 'class',
+      label: 'Owner',
+      shape: 'rectangle',
+      properties: [
+        '- pets: Animal[]',
+        '- address: string',
+      ],
+      methods: [
+        '+ addPet(pet: Animal): void',
+        '+ removePet(pet: Animal): void',
+      ],
+      style: {
+        fill: '#f0f9ff',
+        stroke: '#0ea5e9',
+        strokeWidth: 2,
+      },
+    },
+  },
+
+  // Previous nodes remain unchanged...
   {
     id: 'seq1',
     type: 'sequence',
-    position: { x: 100, y: 50 },
+    position: { x: 100, y: 450 },
     data: {
       type: 'sequence',
       label: 'User',
@@ -33,7 +108,7 @@ export const initialNodes: Node<MermaidNodeData>[] = [
   {
     id: 'seq2',
     type: 'sequence',
-    position: { x: 300, y: 50 },
+    position: { x: 300, y: 450 },
     data: {
       type: 'sequence',
       label: 'API',
@@ -45,67 +120,37 @@ export const initialNodes: Node<MermaidNodeData>[] = [
       },
     },
   },
-  {
-    id: 'seq3',
-    type: 'sequence',
-    position: { x: 500, y: 50 },
-    data: {
-      type: 'sequence',
-      label: 'Database',
-      description: 'PostgreSQL',
-      style: {
-        fill: '#faf5ff',
-        stroke: '#a855f7',
-        strokeWidth: 2,
-      },
-    },
-  },
-
-  // Previous nodes remain unchanged...
-  {
-    id: '1',
-    type: 'mermaid',
-    position: { x: 250, y: 300 },
-    data: {
-      type: 'architecture',
-      label: 'API Gateway',
-      description: 'Main entry point',
-      shape: 'hexagon',
-      technology: 'Kong',
-      protocol: 'HTTP/HTTPS',
-      scalability: 'cluster',
-      style: {
-        fill: '#f0f9ff',
-        stroke: '#0ea5e9',
-        strokeWidth: 2,
-      },
-    },
-  },
-  {
-    id: '2',
-    type: 'mermaid',
-    position: { x: 250, y: 450 },
-    data: {
-      type: 'architecture',
-      label: 'Auth Service',
-      description: 'Authentication & Authorization',
-      shape: 'microservice',
-      technology: 'Node.js',
-      protocol: 'gRPC',
-      scalability: 'distributed',
-      style: {
-        fill: '#fef3c7',
-        stroke: '#d97706',
-        strokeWidth: 2,
-        dashArray: '5,5',
-      },
-    },
-  },
 ];
 
 // Create initial edges
 export const initialEdges = [
-  // Sequence diagram messages
+  // Class diagram relationships
+  {
+    id: 'e-inheritance',
+    source: 'class2',
+    target: 'class1',
+    animated: false,
+    style: { strokeWidth: 2 },
+    type: 'smoothstep',
+    markerEnd: {
+      type: 'arrowclosed',
+      color: '#000000',
+    },
+  },
+  {
+    id: 'e-composition',
+    source: 'class3',
+    target: 'class1',
+    animated: false,
+    style: { strokeWidth: 2 },
+    type: 'smoothstep',
+    markerEnd: {
+      type: 'diamond',
+      color: '#000000',
+    },
+  },
+
+  // Previous edges remain unchanged...
   {
     id: 'seq1-2',
     source: 'seq1',
@@ -113,37 +158,5 @@ export const initialEdges = [
     label: 'GET /api/data',
     animated: true,
     style: { stroke: '#16a34a' },
-  },
-  {
-    id: 'seq2-3',
-    source: 'seq2',
-    target: 'seq3',
-    label: 'SELECT * FROM data',
-    animated: true,
-    style: { stroke: '#0ea5e9' },
-  },
-  {
-    id: 'seq3-2',
-    source: 'seq3',
-    target: 'seq2',
-    label: 'Result Set',
-    animated: true,
-    style: { stroke: '#a855f7' },
-  },
-  {
-    id: 'seq2-1',
-    source: 'seq2',
-    target: 'seq1',
-    label: 'JSON Response',
-    animated: true,
-    style: { stroke: '#0ea5e9' },
-  },
-
-  // Previous edges remain unchanged...
-  {
-    id: 'e1-2',
-    source: '1',
-    target: '2',
-    animated: true,
   },
 ];
