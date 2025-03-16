@@ -1,26 +1,45 @@
-import type { NodeTypes } from '@xyflow/react';
+import { Node } from '@xyflow/react';
+import MermaidNode from '../components/nodes/MermaidNode';
+import { MermaidNodeData } from '../components/nodes/types';
 
-import { PositionLoggerNode } from './PositionLoggerNode';
-import { AppNode } from './types';
+// Register custom node types
+export const nodeTypes = {
+  mermaid: MermaidNode,
+};
 
-export const initialNodes: AppNode[] = [
-  { id: 'a', type: 'input', position: { x: 0, y: 0 }, data: { label: 'wire' } },
+// Create initial nodes for testing
+export const initialNodes: Node<MermaidNodeData>[] = [
   {
-    id: 'b',
-    type: 'position-logger',
-    position: { x: -100, y: 100 },
-    data: { label: 'drag me!' },
+    id: '1',
+    type: 'mermaid',
+    position: { x: 250, y: 100 },
+    data: {
+      label: 'Test Node',
+      description: 'This is a test node',
+      shape: 'rectangle',
+      style: {
+        fill: '#f0f9ff',
+        stroke: '#0ea5e9',
+        strokeWidth: 2,
+      },
+    },
   },
-  { id: 'c', position: { x: 100, y: 100 }, data: { label: 'your ideas' } },
   {
-    id: 'd',
-    type: 'output',
-    position: { x: 0, y: 200 },
-    data: { label: 'with React Flow' },
+    id: '2',
+    type: 'mermaid',
+    position: { x: 250, y: 250 },
+    data: {
+      label: 'Circle Node',
+      description: 'This is a circular node',
+      shape: 'circle',
+      style: {
+        fill: '#fef3c7',
+        stroke: '#d97706',
+        strokeWidth: 2,
+      },
+    },
   },
 ];
 
-export const nodeTypes = {
-  'position-logger': PositionLoggerNode,
-  // Add any of your custom nodes here!
-} satisfies NodeTypes;
+// Create empty edges array
+export const initialEdges = [];

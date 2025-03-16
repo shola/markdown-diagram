@@ -24,19 +24,22 @@ export default function App() {
   );
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      nodeTypes={nodeTypes}
-      onNodesChange={onNodesChange}
-      edges={edges}
-      edgeTypes={edgeTypes}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      fitView
-    >
-      <Background />
-      <MiniMap />
-      <Controls />
-    </ReactFlow>
+    // Add a wrapper div with full viewport dimensions
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <ReactFlow
+        nodes={nodes}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        edges={edges}
+        edgeTypes={edgeTypes}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+      >
+        <Background />
+        <MiniMap />
+        <Controls />
+      </ReactFlow>
+    </div>
   );
 }
