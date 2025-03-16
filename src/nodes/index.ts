@@ -1,21 +1,71 @@
 import { Node } from '@xyflow/react';
 import MermaidNode from '../components/nodes/MermaidNode';
 import FlowchartNode from '../components/nodes/FlowchartNode';
+import SequenceNode from '../components/nodes/SequenceNode';
 import { MermaidNodeData } from '../components/nodes/types';
 
 // Register custom node types
 export const nodeTypes = {
   mermaid: MermaidNode,
   flowchart: FlowchartNode,
+  sequence: SequenceNode,
 };
 
 // Create initial nodes for testing
 export const initialNodes: Node<MermaidNodeData>[] = [
-  // Architecture Nodes
+  // Sequence Diagram Nodes
+  {
+    id: 'seq1',
+    type: 'sequence',
+    position: { x: 100, y: 50 },
+    data: {
+      type: 'sequence',
+      label: 'User',
+      description: 'Client',
+      actor: true,
+      style: {
+        fill: '#f0fdf4',
+        stroke: '#16a34a',
+        strokeWidth: 2,
+      },
+    },
+  },
+  {
+    id: 'seq2',
+    type: 'sequence',
+    position: { x: 300, y: 50 },
+    data: {
+      type: 'sequence',
+      label: 'API',
+      description: 'REST Endpoint',
+      style: {
+        fill: '#f0f9ff',
+        stroke: '#0ea5e9',
+        strokeWidth: 2,
+      },
+    },
+  },
+  {
+    id: 'seq3',
+    type: 'sequence',
+    position: { x: 500, y: 50 },
+    data: {
+      type: 'sequence',
+      label: 'Database',
+      description: 'PostgreSQL',
+      style: {
+        fill: '#faf5ff',
+        stroke: '#a855f7',
+        strokeWidth: 2,
+      },
+    },
+  },
+
+  // Previous nodes remain unchanged...
   {
     id: '1',
     type: 'mermaid',
-    position: { x: 250, y: 100 },
+    position: { x: 250, y: 300 },
     data: {
       type: 'architecture',
       label: 'API Gateway',
@@ -34,7 +84,7 @@ export const initialNodes: Node<MermaidNodeData>[] = [
   {
     id: '2',
     type: 'mermaid',
-    position: { x: 250, y: 250 },
+    position: { x: 250, y: 450 },
     data: {
       type: 'architecture',
       label: 'Auth Service',
@@ -51,103 +101,49 @@ export const initialNodes: Node<MermaidNodeData>[] = [
       },
     },
   },
-
-  // Flowchart Nodes
-  {
-    id: 'flow1',
-    type: 'flowchart',
-    position: { x: 500, y: 100 },
-    data: {
-      type: 'flowchart',
-      label: 'Start',
-      description: 'Begin process',
-      shape: 'circle',
-      style: {
-        fill: '#dcfce7',
-        stroke: '#22c55e',
-        strokeWidth: 2,
-      },
-    },
-  },
-  {
-    id: 'flow2',
-    type: 'flowchart',
-    position: { x: 500, y: 250 },
-    data: {
-      type: 'flowchart',
-      label: 'User Authenticated?',
-      description: 'Check authentication',
-      shape: 'diamond',
-      condition: 'Yes/No',
-      style: {
-        fill: '#fef9c3',
-        stroke: '#eab308',
-        strokeWidth: 2,
-      },
-    },
-  },
-  {
-    id: 'flow3',
-    type: 'flowchart',
-    position: { x: 700, y: 250 },
-    data: {
-      type: 'flowchart',
-      label: 'Process Request',
-      description: 'Handle authenticated request',
-      shape: 'rectangle',
-      style: {
-        fill: '#f0f9ff',
-        stroke: '#0ea5e9',
-        strokeWidth: 2,
-      },
-    },
-  },
-  {
-    id: 'flow4',
-    type: 'flowchart',
-    position: { x: 500, y: 400 },
-    data: {
-      type: 'flowchart',
-      label: 'Return Error',
-      description: 'Authentication failed',
-      shape: 'parallelogram',
-      style: {
-        fill: '#fee2e2',
-        stroke: '#ef4444',
-        strokeWidth: 2,
-      },
-    },
-  },
 ];
 
 // Create initial edges
 export const initialEdges = [
-  // Architecture edges
+  // Sequence diagram messages
+  {
+    id: 'seq1-2',
+    source: 'seq1',
+    target: 'seq2',
+    label: 'GET /api/data',
+    animated: true,
+    style: { stroke: '#16a34a' },
+  },
+  {
+    id: 'seq2-3',
+    source: 'seq2',
+    target: 'seq3',
+    label: 'SELECT * FROM data',
+    animated: true,
+    style: { stroke: '#0ea5e9' },
+  },
+  {
+    id: 'seq3-2',
+    source: 'seq3',
+    target: 'seq2',
+    label: 'Result Set',
+    animated: true,
+    style: { stroke: '#a855f7' },
+  },
+  {
+    id: 'seq2-1',
+    source: 'seq2',
+    target: 'seq1',
+    label: 'JSON Response',
+    animated: true,
+    style: { stroke: '#0ea5e9' },
+  },
+
+  // Previous edges remain unchanged...
   {
     id: 'e1-2',
     source: '1',
     target: '2',
     animated: true,
-  },
-  // Flowchart edges
-  {
-    id: 'flow1-2',
-    source: 'flow1',
-    target: 'flow2',
-    animated: false,
-  },
-  {
-    id: 'flow2-3',
-    source: 'flow2',
-    target: 'flow3',
-    label: 'Yes',
-    animated: false,
-  },
-  {
-    id: 'flow2-4',
-    source: 'flow2',
-    target: 'flow4',
-    label: 'No',
-    animated: false,
   },
 ];

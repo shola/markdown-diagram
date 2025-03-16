@@ -92,15 +92,15 @@
 }
 
 /* Node Styles */
-.mermaid-node, .flowchart-node {
+.mermaid-node, .flowchart-node, .sequence-node {
   @apply p-4 min-w-[150px];
 }
 
-.mermaid-node__header, .flowchart-node__header {
+.mermaid-node__header, .flowchart-node__header, .sequence-node__header {
   @apply text-sm font-medium mb-2;
 }
 
-.mermaid-node__description, .flowchart-node__description {
+.mermaid-node__description, .flowchart-node__description, .sequence-node__description {
   @apply text-xs text-muted-foreground;
 }
 
@@ -113,12 +113,42 @@
   clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 }
 
+/* Sequence Diagram Styles */
+.sequence-node {
+  @apply flex flex-col items-center justify-start text-center;
+}
+
+.sequence-node--actor {
+  @apply pt-8;
+}
+
+.sequence-node__actor {
+  @apply relative;
+}
+
+.sequence-node__lifeline {
+  @apply absolute left-1/2 top-full w-0 border-l-2 border-dashed border-muted-foreground;
+  height: calc(100vh - 100%);
+  transform: translateX(-50%);
+}
+
 /* Connection Line Styles */
 .connection-line {
   @apply !stroke-primary !stroke-2;
 }
 
-/* Decision Node Styles */
-.flowchart-node.rotate-45 .flowchart-node__content {
-  @apply -rotate-45 flex flex-col items-center justify-center h-full;
+/* Edge Label Styles */
+.react-flow__edge-textbg {
+  @apply !fill-background;
+}
+
+.react-flow__edge-text {
+  @apply !fill-foreground !text-xs;
+}
+
+/* Activation Box Styles */
+.sequence-node__activation {
+  @apply absolute left-1/2 top-full w-2 bg-primary/20 border-l border-r border-primary;
+  height: calc(100vh - 100%);
+  transform: translateX(-50%);
 }

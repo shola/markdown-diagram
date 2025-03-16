@@ -35,12 +35,16 @@ export interface NodeStyle {
 export interface BaseNodeData {
   label: string;
   description?: string;
-  shape: NodeShape;
   style?: NodeStyle;
   [key: string]: unknown;
 }
 
-export interface FlowchartNodeData extends BaseNodeData {
+// Shape is required for nodes that use different shapes
+export interface ShapedNodeData extends BaseNodeData {
+  shape: NodeShape;
+}
+
+export interface FlowchartNodeData extends ShapedNodeData {
   type: 'flowchart';
   condition?: string;
 }
@@ -50,20 +54,20 @@ export interface SequenceNodeData extends BaseNodeData {
   actor?: boolean;
 }
 
-export interface ClassNodeData extends BaseNodeData {
+export interface ClassNodeData extends ShapedNodeData {
   type: 'class';
   methods: string[];
   properties: string[];
   stereotype?: string;
 }
 
-export interface StateNodeData extends BaseNodeData {
+export interface StateNodeData extends ShapedNodeData {
   type: 'state';
   entryAction?: string;
   exitAction?: string;
 }
 
-export interface EntityNodeData extends BaseNodeData {
+export interface EntityNodeData extends ShapedNodeData {
   type: 'er';
   attributes: Array<{
     name: string;
@@ -72,14 +76,14 @@ export interface EntityNodeData extends BaseNodeData {
   }>;
 }
 
-export interface GanttNodeData extends BaseNodeData {
+export interface GanttNodeData extends ShapedNodeData {
   type: 'gantt';
   startDate?: string;
   endDate?: string;
   dependencies?: string[];
 }
 
-export interface ArchitectureNodeData extends BaseNodeData {
+export interface ArchitectureNodeData extends ShapedNodeData {
   type: 'architecture';
   technology?: string;
   port?: string;
