@@ -475,7 +475,7 @@ interface EdgeAST {
 
 function edgeToMermaid(edge: EdgeAST): string {
   const connection = edge.type === 'default' ? '-->' : 
-                    edge.type === 'dotted' ? '-.->` : '==>';
+                    edge.type === 'dotted' ? '-.->' : '==>';
                     
   if (!edge.text) return `${edge.from}${connection}${edge.to}`;
   
