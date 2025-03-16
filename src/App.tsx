@@ -14,6 +14,7 @@ import '@xyflow/react/dist/style.css';
 
 import { initialNodes, nodeTypes } from './nodes';
 import { initialEdges, edgeTypes } from './edges';
+import { ExportButton } from './components/toolbar/ExportButton';
 
 export default function App() {
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
@@ -24,7 +25,6 @@ export default function App() {
   );
 
   return (
-    // Add a wrapper div with full viewport dimensions
     <div style={{ width: '100vw', height: '100vh' }}>
       <ReactFlow
         nodes={nodes}
@@ -39,6 +39,9 @@ export default function App() {
         <Background />
         <MiniMap />
         <Controls />
+        <div className="absolute top-4 right-4 z-10">
+          <ExportButton />
+        </div>
       </ReactFlow>
     </div>
   );
