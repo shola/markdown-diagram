@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Toaster } from 'react-hot-toast';
 import {
   ReactFlow,
   Background,
@@ -26,6 +27,7 @@ export default function App() {
 
   return (
     <div style={{ width: '100vw', height: '100vh' }}>
+      <Toaster position="top-right" />
       <ReactFlow
         nodes={nodes}
         nodeTypes={nodeTypes}

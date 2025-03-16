@@ -1,5 +1,6 @@
 import { useCallback, useState, useRef, useEffect } from 'react';
 import { useReactFlow, Edge } from '@xyflow/react';
+import toast from 'react-hot-toast';
 import { MermaidConverter } from '../../features/mermaid/converter';
 import { PreviewDialog } from './PreviewDialog';
 
@@ -61,7 +62,7 @@ export const ExportButton = () => {
       setIsOpen(false);
     } catch (error) {
       console.error('Export failed:', error);
-      alert('Export failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
+      toast.error('Export failed: ' + (error instanceof Error ? error.message : 'Unknown error'));
     }
   }, [instance]);
 

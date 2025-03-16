@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import mermaid from 'mermaid';
 
 interface PreviewDialogProps {
@@ -11,8 +11,21 @@ interface PreviewDialogProps {
 export const PreviewDialog = ({ markdown, isOpen, onClose, onCopy }: PreviewDialogProps) => {
   const previewRef = useRef<HTMLDivElement>(null);
 
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // Close on Escape
+    if (e.key === 'Escape') {
+      onClose();
+    }
+    // Copy on Cmd/Ctrl + C
+    if ((e.metaKey || e.ctrlKey) && e.key === 'c') {
+      e.preventDefault();
+      onCopy();
+    }
+  }, [onClose, onCopy]);
+
   useEffect(() => {
-    if (isOpen && previewRef.current) {
+    if (isOpen) {
+      // Initialize mermaid
       mermaid.initialize({
         startOnLoad: true,
         theme: 'default',
@@ -21,21 +34,29 @@ export const PreviewDialog = ({ markdown, isOpen, onClose, onCopy }: PreviewDial
       
       try {
         // Clear previous content
-        previewRef.current.innerHTML = '';
-        // Generate new diagram
-        mermaid.render('preview', markdown).then(({ svg }) => {
-          if (previewRef.current) {
-            previewRef.current.innerHTML = svg;
-          }
-        });
+        if (previewRef.current) {
+          previewRef.current.innerHTML = '';
+          // Generate new diagram
+          mermaid.render('preview', markdown).then(({ svg }) => {
+            if (previewRef.current) {
+              previewRef.current.innerHTML = svg;
+            }
+          });
+        }
       } catch (error) {
         console.error('Mermaid render error:', error);
         if (previewRef.current) {
           previewRef.current.innerHTML = 'Error rendering preview';
         }
       }
+
+      // Add keyboard event listener
+      document.addEventListener('keydown', handleKeyDown);
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+      };
     }
-  }, [isOpen, markdown]);
+  }, [isOpen, markdown, handleKeyDown]);
 
   if (!isOpen) return null;
 

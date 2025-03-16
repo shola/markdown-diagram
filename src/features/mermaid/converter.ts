@@ -1,7 +1,18 @@
-import { Node, Edge } from '@xyflow/react';
-import { MermaidNodeData } from '../../components/nodes/types';
+import { Node } from '@xyflow/react';
+import { MermaidNodeData, NodeShape } from '../../components/nodes/types';
+import { MermaidEdge } from './types';
 
 type DiagramType = 'flowchart' | 'sequence' | 'class' | 'state' | 'er' | 'gantt';
+
+interface ParsedDiagram {
+  nodes: Node<MermaidNodeData>[];
+  edges: MermaidEdge[];
+}
+
+interface NodePosition {
+  x: number;
+  y: number;
+}
 
 interface ConversionOptions {
   direction?: 'TB' | 'BT' | 'LR' | 'RL';
@@ -9,6 +20,9 @@ interface ConversionOptions {
 
 export class MermaidConverter {
   private static getDiagramType(nodes: Node<MermaidNodeData>[]): DiagramType {
+    if (nodes.length === 0) {
+      throw new Error('No nodes provided');
+    }
     const types = new Set(nodes.map(node => node.data.type));
     if (types.size !== 1) {
       throw new Error('Mixed diagram types are not supported');
@@ -16,7 +30,7 @@ export class MermaidConverter {
     return Array.from(types)[0] as DiagramType;
   }
 
-  private static getEdgeRelationType(edge: Edge): 'inheritance' | 'composition' | 'association' {
+  private static getEdgeRelationType(edge: MermaidEdge): 'inheritance' | 'composition' | 'association' {
     const markerEnd = edge.markerEnd as { type?: string } | undefined;
     if (markerEnd?.type === 'arrowclosed') return 'inheritance';
     if (markerEnd?.type === 'diamond') return 'composition';
@@ -25,7 +39,7 @@ export class MermaidConverter {
 
   private static convertFlowchart(
     nodes: Node<MermaidNodeData>[],
-    edges: Edge[],
+    edges: MermaidEdge[],
     options: ConversionOptions = {}
   ): string {
     const direction = options.direction || 'TB';
@@ -78,7 +92,7 @@ export class MermaidConverter {
 
   private static convertSequence(
     nodes: Node<MermaidNodeData>[],
-    edges: Edge[]
+    edges: MermaidEdge[]
   ): string {
     let markdown = 'sequenceDiagram\n';
 
@@ -100,7 +114,7 @@ export class MermaidConverter {
 
   private static convertClass(
     nodes: Node<MermaidNodeData>[],
-    edges: Edge[]
+    edges: MermaidEdge[]
   ): string {
     let markdown = 'classDiagram\n';
 
@@ -145,7 +159,7 @@ export class MermaidConverter {
 
   private static convertState(
     nodes: Node<MermaidNodeData>[],
-    edges: Edge[]
+    edges: MermaidEdge[]
   ): string {
     let markdown = 'stateDiagram-v2\n';
 
@@ -196,7 +210,7 @@ export class MermaidConverter {
 
   private static convertER(
     nodes: Node<MermaidNodeData>[],
-    edges: Edge[]
+    edges: MermaidEdge[]
   ): string {
     let markdown = 'erDiagram\n';
 
@@ -277,24 +291,222 @@ export class MermaidConverter {
 
   static convert(
     nodes: Node<MermaidNodeData>[],
-    edges: Edge[],
+    edges: MermaidEdge[],
     options: ConversionOptions = {}
   ): string {
     const diagramType = this.getDiagramType(nodes);
 
+    let markdown: string;
     switch (diagramType) {
       case 'flowchart':
-        return this.convertFlowchart(nodes, edges, options);
+        markdown = this.convertFlowchart(nodes, edges, options);
+        break;
       case 'sequence':
-        return this.convertSequence(nodes, edges);
+        markdown = this.convertSequence(nodes, edges);
+        break;
       case 'class':
-        return this.convertClass(nodes, edges);
+        markdown = this.convertClass(nodes, edges);
+        break;
       case 'state':
-        return this.convertState(nodes, edges);
+        markdown = this.convertState(nodes, edges);
+        break;
       case 'er':
-        return this.convertER(nodes, edges);
+        markdown = this.convertER(nodes, edges);
+        break;
       case 'gantt':
-        return this.convertGantt(nodes);
+        markdown = this.convertGantt(nodes);
+        break;
+      default:
+        throw new Error(`Unsupported diagram type: ${diagramType}`);
+    }
+
+    return [
+      '```mermaid',
+      markdown,
+      '```'
+    ].join('\n');
+  }
+
+  private static getGridPosition(index: number, total: number): NodePosition {
+    const SPACING = 200;
+    const VERTICAL_SPACING = 150;
+    const gridColumns = Math.ceil(Math.sqrt(total));
+    return {
+      x: (index % gridColumns) * SPACING + 100,
+      y: Math.floor(index / gridColumns) * VERTICAL_SPACING + 100
+    };
+  }
+
+  private static calculateNodePosition(index: number, total: number, type: DiagramType): NodePosition {
+    const SPACING = 200;
+    const VERTICAL_SPACING = 150;
+    
+    switch (type) {
+      case 'sequence':
+        // Horizontal layout for sequence diagrams
+        return {
+          x: index * SPACING + 100,
+          y: 100
+        };
+      case 'gantt':
+        // Vertical layout for gantt charts
+        return {
+          x: 100,
+          y: index * VERTICAL_SPACING + 100
+        };
+      default:
+        // Grid layout for other diagrams
+        return this.getGridPosition(index, total);
+    }
+  }
+
+  private static parseFlowchart(lines: string[]): ParsedDiagram {
+    const nodes: Node<MermaidNodeData>[] = [];
+    const edges: MermaidEdge[] = [];
+
+    // Regular expressions for parsing
+    const nodeRegex = /^\s*(\w+)([[\](){}<>].*[[\](){}<>])/;
+    const edgeRegex = /^\s*(\w+)(--?-?[>x]|==?>|-.->)(\w+)(?:\|(.+?)\|)?/;
+
+    lines.slice(1).forEach(line => {
+      const nodeLine = line.match(nodeRegex);
+      if (nodeLine) {
+        const [, id, shape] = nodeLine;
+        let nodeShape: NodeShape = 'rectangle';
+        const label = shape.slice(1, -1);
+
+        // Map Mermaid shapes to our shapes
+        if (shape.startsWith('((')) nodeShape = 'circle';
+        else if (shape.startsWith('{{')) nodeShape = 'hexagon';
+        else if (shape.startsWith('{')) nodeShape = 'diamond';
+        else if (shape.startsWith('[/')) nodeShape = 'parallelogram';
+        else if (shape.startsWith('[\\')) nodeShape = 'triangle';
+
+        nodes.push({
+          id,
+          type: 'default',
+          position: this.calculateNodePosition(nodes.length, lines.length, 'flowchart'),
+          data: {
+            type: 'flowchart',
+            label,
+            shape: nodeShape
+          }
+        });
+      }
+
+      const edgeLine = line.match(edgeRegex);
+      if (edgeLine) {
+        const [, source, connector, target, label] = edgeLine;
+        edges.push({
+          id: `${source}-${target}`,
+          source,
+          target,
+          label,
+          animated: connector.includes('-.-'),
+          markerEnd: {
+            type: 'arrowclosed'
+          }
+        });
+      }
+    });
+
+    return { nodes, edges };
+  }
+
+  private static parseSequence(lines: string[]): ParsedDiagram {
+    const nodes: Node<MermaidNodeData>[] = [];
+    const edges: MermaidEdge[] = [];
+
+    // Regular expressions for parsing
+    const participantRegex = /^\s*(participant|actor)\s+(\w+)(?:\s+as\s+(.+))?/;
+    const messageRegex = /^\s*(\w+)(->>|-->|-)(\w+):(.+)?/;
+
+    // First pass: collect all participants
+    lines.slice(1).forEach(line => {
+      const participantMatch = line.match(participantRegex);
+      if (participantMatch) {
+        const [, type, id, label] = participantMatch;
+        nodes.push({
+          id,
+          type: 'default',
+          position: this.calculateNodePosition(nodes.length, lines.length, 'sequence'),
+          data: {
+            type: 'sequence',
+            label: label || id,
+            actor: type === 'actor'
+          }
+        });
+      }
+    });
+
+    // Second pass: collect all messages
+    lines.slice(1).forEach(line => {
+      const messageMatch = line.match(messageRegex);
+      if (messageMatch) {
+        const [, source, arrow, target, label = ''] = messageMatch;
+        edges.push({
+          id: `${source}-${target}-${edges.length}`,
+          source,
+          target,
+          label: label.trim(),
+          animated: arrow.includes('--'),
+          markerEnd: {
+            type: 'arrowclosed'
+          }
+        });
+      }
+    });
+
+    return { nodes, edges };
+  }
+
+  static fromMermaid(markdown: string): ParsedDiagram {
+    // Remove ```mermaid wrapper if present
+    const content = markdown.replace(/```mermaid\n([\s\S]*?)```/, '$1').trim();
+    const lines = content.split('\n').map(line => line.trim()).filter(line => line);
+
+    if (lines.length === 0) {
+      throw new Error('Empty Mermaid diagram');
+    }
+
+    // Detect diagram type from first line
+    const firstLine = lines[0].toLowerCase();
+    let diagramType: DiagramType;
+
+    if (firstLine.startsWith('flowchart') || firstLine.startsWith('graph')) {
+      diagramType = 'flowchart';
+    } else if (firstLine.startsWith('sequencediagram')) {
+      diagramType = 'sequence';
+    } else if (firstLine.startsWith('classdiagram')) {
+      diagramType = 'class';
+    } else if (firstLine.startsWith('statediagram')) {
+      diagramType = 'state';
+    } else if (firstLine.startsWith('erdiagram')) {
+      diagramType = 'er';
+    } else if (firstLine.startsWith('gantt')) {
+      diagramType = 'gantt';
+    } else {
+      throw new Error(`Unsupported diagram type: ${firstLine}`);
+    }
+
+    // Parse based on diagram type
+    switch (diagramType) {
+      case 'flowchart':
+        return this.parseFlowchart(lines);
+      case 'sequence':
+        return this.parseSequence(lines);
+      case 'class':
+        // TODO: Implement class diagram parsing
+        throw new Error('Class diagram parsing not implemented yet');
+      case 'state':
+        // TODO: Implement state diagram parsing
+        throw new Error('State diagram parsing not implemented yet');
+      case 'er':
+        // TODO: Implement ER diagram parsing
+        throw new Error('ER diagram parsing not implemented yet');
+      case 'gantt':
+        // TODO: Implement Gantt chart parsing
+        throw new Error('Gantt chart parsing not implemented yet');
       default:
         throw new Error(`Unsupported diagram type: ${diagramType}`);
     }
