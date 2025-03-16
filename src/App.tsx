@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { Toaster } from 'react-hot-toast';
 import {
   ReactFlow,
   Background,
@@ -14,6 +15,7 @@ import '@xyflow/react/dist/style.css';
 
 import { initialNodes, nodeTypes } from './nodes';
 import { initialEdges, edgeTypes } from './edges';
+import { ExportButton } from './components/toolbar/ExportButton';
 
 export default function App() {
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
@@ -24,19 +26,25 @@ export default function App() {
   );
 
   return (
-    <ReactFlow
-      nodes={nodes}
-      nodeTypes={nodeTypes}
-      onNodesChange={onNodesChange}
-      edges={edges}
-      edgeTypes={edgeTypes}
-      onEdgesChange={onEdgesChange}
-      onConnect={onConnect}
-      fitView
-    >
-      <Background />
-      <MiniMap />
-      <Controls />
-    </ReactFlow>
+    <div style={{ width: '100vw', height: '100vh' }}>
+      <Toaster position="top-right" />
+      <ReactFlow
+        nodes={nodes}
+        nodeTypes={nodeTypes}
+        onNodesChange={onNodesChange}
+        edges={edges}
+        edgeTypes={edgeTypes}
+        onEdgesChange={onEdgesChange}
+        onConnect={onConnect}
+        fitView
+      >
+        <Background />
+        <MiniMap />
+        <Controls />
+        <div className="absolute top-4 right-4 z-10">
+          <ExportButton />
+        </div>
+      </ReactFlow>
+    </div>
   );
 }
