@@ -91,20 +91,34 @@
   @apply !bg-background !text-foreground;
 }
 
-/* Mermaid Node Styles */
-.mermaid-node {
+/* Node Styles */
+.mermaid-node, .flowchart-node {
   @apply p-4 min-w-[150px];
 }
 
-.mermaid-node__header {
+.mermaid-node__header, .flowchart-node__header {
   @apply text-sm font-medium mb-2;
 }
 
-.mermaid-node__description {
+.mermaid-node__description, .flowchart-node__description {
   @apply text-xs text-muted-foreground;
+}
+
+/* Flowchart Shape Styles */
+.clip-path-triangle {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.clip-path-hexagon {
+  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
 }
 
 /* Connection Line Styles */
 .connection-line {
   @apply !stroke-primary !stroke-2;
+}
+
+/* Decision Node Styles */
+.flowchart-node.rotate-45 .flowchart-node__content {
+  @apply -rotate-45 flex flex-col items-center justify-center h-full;
 }

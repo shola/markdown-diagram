@@ -1,14 +1,17 @@
 import { Node } from '@xyflow/react';
 import MermaidNode from '../components/nodes/MermaidNode';
+import FlowchartNode from '../components/nodes/FlowchartNode';
 import { MermaidNodeData } from '../components/nodes/types';
 
 // Register custom node types
 export const nodeTypes = {
   mermaid: MermaidNode,
+  flowchart: FlowchartNode,
 };
 
 // Create initial nodes for testing
 export const initialNodes: Node<MermaidNodeData>[] = [
+  // Architecture Nodes
   {
     id: '1',
     type: 'mermaid',
@@ -48,39 +51,69 @@ export const initialNodes: Node<MermaidNodeData>[] = [
       },
     },
   },
+
+  // Flowchart Nodes
   {
-    id: '3',
-    type: 'mermaid',
-    position: { x: 450, y: 250 },
+    id: 'flow1',
+    type: 'flowchart',
+    position: { x: 500, y: 100 },
     data: {
-      type: 'architecture',
-      label: 'User Database',
-      description: 'User data storage',
-      shape: 'database',
-      technology: 'PostgreSQL',
-      scalability: 'cluster',
+      type: 'flowchart',
+      label: 'Start',
+      description: 'Begin process',
+      shape: 'circle',
       style: {
-        fill: '#f3e8ff',
-        stroke: '#a855f7',
+        fill: '#dcfce7',
+        stroke: '#22c55e',
         strokeWidth: 2,
       },
     },
   },
   {
-    id: '4',
-    type: 'mermaid',
-    position: { x: 50, y: 250 },
+    id: 'flow2',
+    type: 'flowchart',
+    position: { x: 500, y: 250 },
     data: {
-      type: 'architecture',
-      label: 'Message Queue',
-      description: 'Event bus',
-      shape: 'queue',
-      technology: 'RabbitMQ',
-      protocol: 'AMQP',
-      scalability: 'distributed',
+      type: 'flowchart',
+      label: 'User Authenticated?',
+      description: 'Check authentication',
+      shape: 'diamond',
+      condition: 'Yes/No',
       style: {
-        fill: '#ecfdf5',
-        stroke: '#10b981',
+        fill: '#fef9c3',
+        stroke: '#eab308',
+        strokeWidth: 2,
+      },
+    },
+  },
+  {
+    id: 'flow3',
+    type: 'flowchart',
+    position: { x: 700, y: 250 },
+    data: {
+      type: 'flowchart',
+      label: 'Process Request',
+      description: 'Handle authenticated request',
+      shape: 'rectangle',
+      style: {
+        fill: '#f0f9ff',
+        stroke: '#0ea5e9',
+        strokeWidth: 2,
+      },
+    },
+  },
+  {
+    id: 'flow4',
+    type: 'flowchart',
+    position: { x: 500, y: 400 },
+    data: {
+      type: 'flowchart',
+      label: 'Return Error',
+      description: 'Authentication failed',
+      shape: 'parallelogram',
+      style: {
+        fill: '#fee2e2',
+        stroke: '#ef4444',
         strokeWidth: 2,
       },
     },
@@ -89,22 +122,32 @@ export const initialNodes: Node<MermaidNodeData>[] = [
 
 // Create initial edges
 export const initialEdges = [
+  // Architecture edges
   {
     id: 'e1-2',
     source: '1',
     target: '2',
     animated: true,
   },
+  // Flowchart edges
   {
-    id: 'e2-3',
-    source: '2',
-    target: '3',
-    animated: true,
+    id: 'flow1-2',
+    source: 'flow1',
+    target: 'flow2',
+    animated: false,
   },
   {
-    id: 'e2-4',
-    source: '2',
-    target: '4',
-    animated: true,
+    id: 'flow2-3',
+    source: 'flow2',
+    target: 'flow3',
+    label: 'Yes',
+    animated: false,
+  },
+  {
+    id: 'flow2-4',
+    source: 'flow2',
+    target: 'flow4',
+    label: 'No',
+    animated: false,
   },
 ];

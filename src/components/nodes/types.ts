@@ -10,6 +10,7 @@ export type MermaidNodeType =
   | 'architecture';
 
 export type NodeShape =
+  // Architecture shapes
   | 'rectangle'
   | 'circle'
   | 'diamond'
@@ -18,7 +19,11 @@ export type NodeShape =
   | 'queue'
   | 'cloud'
   | 'cylinder'
-  | 'microservice';
+  | 'microservice'
+  // Flowchart shapes
+  | 'parallelogram'
+  | 'triangle'
+  | 'oval';
 
 export interface NodeStyle {
   fill?: string;

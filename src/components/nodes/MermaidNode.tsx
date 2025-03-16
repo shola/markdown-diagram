@@ -6,10 +6,13 @@ const MermaidNode = ({
   data,
   selected,
 }: MermaidNodeProps) => {
+  if (data.type !== 'architecture') return null;
+
   const { label, description, shape = 'rectangle', style = {} } = data;
 
   // Define shape-specific styles
   const shapeStyles: Record<NodeShape, string> = {
+    // Architecture shapes
     rectangle: 'rounded-lg',
     circle: 'rounded-full aspect-square',
     diamond: 'rotate-45',
@@ -19,6 +22,10 @@ const MermaidNode = ({
     cloud: 'rounded-full',
     cylinder: 'rounded-lg border-t-4 border-b-4',
     microservice: 'rounded-lg border-2 border-dashed',
+    // Flowchart shapes
+    parallelogram: 'skew-x-12',
+    triangle: 'clip-path-triangle',
+    oval: 'rounded-full px-8',
   };
 
   // Additional shape-specific elements
@@ -80,26 +87,24 @@ const MermaidNode = ({
           </div>
         )}
 
-        {/* Render type-specific content */}
-        {data.type === 'architecture' && (
-          <div className="mt-2 text-xs">
-            {data.technology && (
-              <div className="text-muted-foreground">
-                Tech: {data.technology}
-              </div>
-            )}
-            {data.protocol && (
-              <div className="text-muted-foreground">
-                Protocol: {data.protocol}
-              </div>
-            )}
-            {data.scalability && (
-              <div className="text-muted-foreground">
-                Scale: {data.scalability}
-              </div>
-            )}
-          </div>
-        )}
+        {/* Architecture-specific content */}
+        <div className="mt-2 text-xs">
+          {data.technology && (
+            <div className="text-muted-foreground">
+              Tech: {data.technology}
+            </div>
+          )}
+          {data.protocol && (
+            <div className="text-muted-foreground">
+              Protocol: {data.protocol}
+            </div>
+          )}
+          {data.scalability && (
+            <div className="text-muted-foreground">
+              Scale: {data.scalability}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Handles */}
